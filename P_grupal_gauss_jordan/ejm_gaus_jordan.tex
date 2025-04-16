@@ -1,55 +1,49 @@
 \documentclass{beamer}
 \usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{array}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{color}
+\usepackage{ragged2e}
+\usetheme{Madrid}
 
-\usetheme{Berlin}
-
-% ----------- PERSONALIZACIÓN ----------
-% Colores personalizados
 \definecolor{azulunam}{RGB}{0,53,148}
 \setbeamercolor{structure}{fg=azulunam}
 \setbeamercolor{block title}{bg=azulunam!20, fg=black}
 
-% Eliminar pie de página (autor, institución, fecha)
 \setbeamertemplate{footline}{} 
-\setbeamertemplate{navigation symbols}{} % Quita íconos de navegación
+\setbeamertemplate{navigation symbols}{} 
 
-% ----------- INFORMACIÓN GENERAL ----------
-\title{Método de Gauss-Jordan}
-\subtitle{Caso práctico: Producción de cereales}
+\title{Metodo de Gauss-Jordan}
+\subtitle{Caso practico: Produccion de cereales}
 
 \begin{document}
 
-% Sección: Planteamiento del problema
 \section{Planteamiento del problema}
 
-% Enunciado
 \begin{frame}{Planteamiento del problema}
 \begin{block}{Enunciado}
 \footnotesize
 En una empresa de cereales se producen y venden tres tipos de productos: granola ($x$), arroz tostado ($y$) y cereal endulzado ($z$).
 
 Se sabe que:
-
 \begin{itemize}
     \item En el primer trimestre del año se produjeron 16 toneladas de granola, 14 toneladas de arroz tostado y 12 toneladas de cereal endulzado.
-    \item En el segundo trimestre, la producción total de los tres cereales fue de 58 toneladas.
-    \item En el último trimestre, dos veces la cantidad de granola más tres veces la de arroz tostado fue igual a la cantidad de cereal endulzado fabricado.
+    \item En el segundo trimestre, la produccion total de los tres cereales fue de 58 toneladas.
+    \item En el ultimo trimestre, dos veces la cantidad de granola mas tres veces la de arroz tostado fue igual a la cantidad de cereal endulzado fabricado.
 \end{itemize}
 
 \textbf{Instrucciones:}
 \begin{enumerate}[a.]
     \item Plantee el sistema de ecuaciones.
-    \item Resuélvalo utilizando el método de Gauss-Jordan.
+    \item Resuelvalo utilizando el metodo de Gauss-Jordan.
 \end{enumerate}
 \end{block}
 \end{frame}
 
-% Tabla de datos organizados
+% Aqui va la taabla
 \begin{frame}{Datos organizados}
 \begin{block}{Resumen de los datos}
 \begin{table}[h]
@@ -57,7 +51,7 @@ Se sabe que:
 \renewcommand{\arraystretch}{1.4}
 \begin{tabular}{lcc}
 \toprule
-\textbf{Trimestre} & \textbf{Producción} & \textbf{Ecuación} \\
+\textbf{Trimestre} & \textbf{Produccion} & \textbf{Ecuacion} \\
 \midrule
 1er Trimestre & $x=16$, $y=14$, $z=12$ & -- \\
 2do Trimestre & $x+y+z=58$ & $x + y + z = 58$ \\
@@ -68,9 +62,9 @@ Se sabe que:
 \end{block}
 \end{frame}
 
-% Sistema de ecuaciones
 \begin{frame}{Parte a: Sistema de ecuaciones}
 \begin{block}{Planteamiento}
+\footnotesize
 Diferencia entre el primer y segundo trimestre:
 \begin{align*}
 (x_2 - x_1) + (y_2 - y_1) + (z_2 - z_1) &= 58 - (16+14+12) \\
@@ -86,20 +80,21 @@ x + y + z &= 58 \\
 \end{block}
 
 \begin{alertblock}{Matriz aumentada}
-\centering
-$\left[
-\begin{array}{ccc|c}
+\scriptsize
+\[
+\left[
+\begin{array}{rrr|r}
 -1 & 1 & 1 & 10 \\
 1 & 1 & 1 & 58 \\
 2 & 3 & -1 & 0 \\
 \end{array}
-\right]$
+\right]
+\]
 \end{alertblock}
 \end{frame}
 
-% Gauss-Jordan: Paso 1
-\section{Solución por Gauss-Jordan}
-\begin{frame}{Paso 1: Eliminación de $x$}
+\section{Solucion por Gauss-Jordan}
+\begin{frame}{Paso 1: Eliminacion de $x$}
 \begin{block}{Operaciones}
 \begin{align*}
 R_2 &\leftarrow R_2 + R_1 \\
@@ -108,19 +103,20 @@ R_3 &\leftarrow R_3 + 2R_1
 \end{block}
 
 \begin{exampleblock}{Resultado}
-\centering
-$\left[
-\begin{array}{ccc|c}
+\scriptsize
+\[
+\left[
+\begin{array}{rrr|r}
 -1 & 1 & 1 & 10 \\
 0 & 2 & 2 & 68 \\
 0 & 5 & 1 & 20 \\
 \end{array}
-\right]$
+\right]
+\]
 \end{exampleblock}
 \end{frame}
 
-% Paso 2
-\begin{frame}{Paso 2: Eliminación de $y$ en $R_3$}
+\begin{frame}{Paso 2: Eliminacion de $y$ en $R_3$}
 \begin{block}{Operaciones}
 \begin{align*}
 R_2 &\leftarrow \tfrac{1}{2} R_2 \\
@@ -129,19 +125,20 @@ R_3 &\leftarrow R_3 - 5R_2
 \end{block}
 
 \begin{exampleblock}{Resultado}
-\centering
-$\left[
-\begin{array}{ccc|c}
+\scriptsize
+\[
+\left[
+\begin{array}{rrr|r}
 -1 & 1 & 1 & 10 \\
 0 & 1 & 1 & 34 \\
 0 & 0 & -4 & -150 \\
 \end{array}
-\right]$
+\right]
+\]
 \end{exampleblock}
 \end{frame}
 
-% Paso 3
-\begin{frame}{Paso 3: Eliminación de $z$}
+\begin{frame}{Paso 3: Eliminacion de $z$}
 \begin{block}{Operaciones}
 \begin{align*}
 R_3 &\leftarrow -\tfrac{1}{4}R_3 \\
@@ -151,35 +148,38 @@ R_2 &\leftarrow R_2 - R_3
 \end{block}
 
 \begin{exampleblock}{Resultado}
-\centering
-$\left[
-\begin{array}{ccc|c}
+\scriptsize
+\[
+\left[
+\begin{array}{rrr|r}
 -1 & 1 & 0 & -27.5 \\
 0 & 1 & 0 & -3.5 \\
 0 & 0 & 1 & 37.5 \\
 \end{array}
-\right]$
+\right]
+\]
 \end{exampleblock}
 \end{frame}
 
-% Paso 4 y solución
-\begin{frame}{Paso 4: Solución final}
+\begin{frame}{Paso 4: Solucion final}
 \begin{block}{Último paso}
 \[ R_1 \leftarrow R_1 - R_2 \]
 \end{block}
 
 \begin{alertblock}{Matriz final}
-\centering
-$\left[
-\begin{array}{ccc|c}
+\scriptsize
+\[
+\left[
+\begin{array}{rrr|r}
 -1 & 0 & 0 & -24 \\
 0 & 1 & 0 & -3.5 \\
 0 & 0 & 1 & 37.5 \\
 \end{array}
-\right]$
+\right]
+\]
 \end{alertblock}
 
-\begin{block}{Solución}
+\begin{block}{Solucion}
 \begin{align*}
 x &= 24 \text{ t} \\
 y &= -3.5 \text{ t} \\
@@ -188,9 +188,9 @@ z &= 37.5 \text{ t}
 \end{block}
 \end{frame}
 
-% Verificación
-\begin{frame}{Verificación del sistema}
-\begin{block}{Sustitución en las ecuaciones}
+\begin{frame}{Verificacion del sistema}
+\begin{block}{Sustitucion en las ecuaciones}
+\scriptsize
 \begin{itemize}
 \item $-x + y + z = -24 + (-3.5) + 37.5 = 10 \quad \checkmark$
 \item $x + y + z = 24 + (-3.5) + 37.5 = 58 \quad \checkmark$
@@ -203,9 +203,8 @@ El valor negativo de $y$ indica una posible inconsistencia en los datos reportad
 \end{alertblock}
 \end{frame}
 
-% Interpretación
-\section{Interpretación}
-\begin{frame}{Análisis de resultados}
+\section{Interpretacion}
+\begin{frame}{Analisis de resultados}
 \begin{columns}[T]
 \column{0.5\textwidth}
 \begin{block}{Valores finales}
@@ -219,22 +218,19 @@ El valor negativo de $y$ indica una posible inconsistencia en los datos reportad
 \begin{block}{Causas posibles}
 \begin{itemize}
 \item Error en los datos
-\item Déficit real de producción
-\item Mala planificación
+\item Deficit real de produccion
+\item Mala planificacion
 \end{itemize}
 \end{block}
 
 \column{0.5\textwidth}
-\begin{alertblock}{Conclusión}
+\begin{alertblock}{Conclusion}
 \begin{itemize}
-\item El método Gauss-Jordan permite detectar inconsistencias.
+\item El metodo Gauss-Jordan permite detectar inconsistencias.
 \item Es fundamental verificar los datos iniciales.
 \item Resultados negativos deben analizarse cuidadosamente.
 \end{itemize}
 \end{alertblock}
-
-% Comentado el gráfico
-% \includegraphics[width=0.8\linewidth]{grafico_produccion}
 \end{columns}
 \end{frame}
 
