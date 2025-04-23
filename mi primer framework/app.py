@@ -4,78 +4,96 @@ import numpy as np
 
 app = Flask(__name__)
 
-def obtener_numeros(ecuacion):
+def obtener_coeficientes(ecuacion, variables):
+    # Normalizar la ecuación
+    ecuacion = ecuacion.replace(' ', '')
+    
     try:
-        izquierda, derecha = ecuacion.split("=")
+        izquierda, derecha = ecuacion.split('=')
+    except:
+        raise ValueError("Formato incorrecto. Debe contener '='")
+    
+    # Inicializar coeficientes en 0
+    coef = {v: 0 for v in variables}
+    coef['constante'] = float(derecha)
+    
+    # Extraer términos
+    terminos = re.findall(r'([+-]?\d*\.?\d*)([a-zA-Z])', izquierda)
+    
+    for term in terminos:
+        valor, var = term
+        if not valor or valor == '+':
+            valor = '1'
+        elif valor == '-':
+            valor = '-1'
         
-        if izquierda[0] not in "+-":
-            izquierda = "+" + izquierda  
+        if var in variables:
+            coef[var] += float(valor)
+        else:
+            raise ValueError(f"Variable '{var}' no coincide con las demás")
+    
+    return [coef[v] for v in variables] + [coef['constante']]
 
-        terminos = re.findall(r'[+-](?:\d*\.?\d*)?[a-zA-Z]', izquierda)
-        coeficientes = []
-
-        for termino in terminos:
-            match = re.match(r'([+-]?\d*\.?\d*)[a-zA-Z]', termino)
-            numero = match.group(1)
-
-            if numero in ["+", "-"]:  
-                numero += "1"
-            coeficientes.append(float(numero))
-        coeficientes.append(float(derecha))
-        return coeficientes
-    except Exception as e:
-        raise ValueError(f"Error al procesar la ecuación: {ecuacion}. Formato correcto: '2x + 3y = 9'")
-
-def gauss_jordan(matriz, n):
+def gauss_jordan(matriz):
     try:
-        # Copia para no modificar la original
-        mat = np.copy(matriz)
+        n = len(matriz)
         
         for i in range(n):
-            # Pivoteo parcial para evitar división por cero
-            max_row = np.argmax(np.abs(mat[i:, i])) + i
-            mat[[i, max_row]] = mat[[max_row, i]]
+            # Pivoteo parcial
+            max_row = max(range(i, n), key=lambda r: abs(matriz[r][i]))
+            matriz[i], matriz[max_row] = matriz[max_row], matriz[i]
             
-            pivot = mat[i][i]
-            if pivot == 0:
-                raise ValueError("El sistema no tiene solución única")
+            pivot = matriz[i][i]
+            if abs(pivot) < 1e-10:
+                raise ValueError("Sistema incompatible o con infinitas soluciones")
                 
-            mat[i] = mat[i] / pivot
+            # Normalizar fila
+            matriz[i] = [elem / pivot for elem in matriz[i]]
+            
+            # Eliminación
             for j in range(n):
                 if i != j:
-                    mat[j] = mat[j] - mat[i] * mat[j][i]
-        return mat[:, -1]
+                    factor = matriz[j][i]
+                    matriz[j] = [matriz[j][k] - factor * matriz[i][k] for k in range(n+1)]
+        
+        soluciones = [fila[-1] for fila in matriz]
+        return soluciones
+    
     except Exception as e:
-        raise ValueError(f"Error en el cálculo: {str(e)}")
+        raise ValueError(str(e))
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         ecuaciones = request.form.getlist('ecuacion[]')
-        if not ecuaciones:
-            return jsonify({'success': False, 'error': 'No se ingresaron ecuaciones'})
         
         try:
-            variables = sorted(set(re.findall(r'[a-zA-Z]', ' '.join(ecuaciones))))
+            if not ecuaciones:
+                raise ValueError("No se ingresaron ecuaciones")
             
-            if len(ecuaciones) != len(variables):
+            # Detectar variables
+            variables = sorted(list(set(
+                char for eq in ecuaciones 
+                for char in re.findall(r'[a-zA-Z]', eq.split('=')[0])
+            )))
+            
+            if len(variables) != len(ecuaciones):
                 raise ValueError(f"Se necesitan {len(variables)} ecuaciones para {len(variables)} variables")
             
-            A = []
+            # Construir matriz
+            matriz = []
             for eq in ecuaciones:
-                res = obtener_numeros(eq)
-                A.append(res[:-1])  # Coeficientes
-                
-            B = [eq[-1] for eq in A]  # Términos independientes
-            A = np.array(A, dtype=float)
+                matriz.append(obtener_coeficientes(eq, variables))
             
-            soluciones = gauss_jordan(np.column_stack((A, B)), len(variables))
-
+            # Resolver
+            soluciones = gauss_jordan(matriz)
+            
             resultados = {var: f"{sol:.4f}" for var, sol in zip(variables, soluciones)}
             return jsonify({'success': True, 'resultados': resultados})
+            
         except Exception as e:
             return jsonify({'success': False, 'error': str(e)})
-
+    
     return render_template('index.html')
 
 if __name__ == '__main__':
