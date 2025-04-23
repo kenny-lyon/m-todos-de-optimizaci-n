@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Método Gauss-Jordan</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Resolución de Sistemas de Ecuaciones</h1>
+        <h2>Método de Gauss-Jordan</h2>
+        
+        <div class="instructions">
+            <p><strong>Instrucciones:</strong></p>
+            <ol>
+                <li>Ingresa las ecuaciones lineales</li>
+                <li>Usa el mismo formato para todas (ej: "2x + 3y = 9")</li>
+                <li>Asegúrate de usar las mismas variables en todas las ecuaciones</li>
+            </ol>
+        </div>
+        
+        <form id="ecuaciones-form">
+            <div id="ecuaciones-container">
+                <div class="ecuacion-group">
+                    <input type="text" name="ecuacion[]" placeholder="Ej: 2x + 3y = 9" required>
+                    <button type="button" class="remove-btn">×</button>
+                </div>
+            </div>
+            
+            <div class="buttons">
+                <button type="button" id="add-ecuacion">➕ Agregar Ecuación</button>
+                <button type="submit" id="solve-btn">🔍 Resolver Sistema</button>
+            </div>
+        </form>
+        
+        <div id="resultados" class="hidden">
+            <h3>Resultados:</h3>
+            <div id="resultados-content"></div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Agregar nueva ecuación
+            $('#add-ecuacion').click(function() {
+                const newEq = `
+                    <div class="ecuacion-group">
+                        <input type="text" name="ecuacion[]" placeholder="Ej: 3x - 2y = 5" required>
+                        <button type="button" class="remove-btn">×</button>
+                    </div>
+                `;
+                $('#ecuaciones-container').append(newEq);
+            });
+
+            // Eliminar ecuación
+            $(document).on('click', '.remove-btn', function() {
+                if($('.ecuacion-group').length > 1) {
+                    $(this).parent().remove();
+                } else {
+                    alert("Debe haber al menos una ecuación");
+                }
+            });
+
+            // Enviar formulario
+            $('#ecuaciones-form').submit(function(e) {
+                e.preventDefault();
+                $('#resultados').addClass('hidden');
+                $('#solve-btn').prop('disabled', true).text('Calculando...');
+                
+                $.ajax({
+                    type: 'POST',
+                    url: '/',
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        if(response.success) {
+                            let html = '<ul>';
+                            for(const [variable, valor] of Object.entries(response.resultados)) {
+                                html += `<li><strong>${variable}</strong> = ${valor}</li>`;
+                            }
+                            html += '</ul>';
+                            $('#resultados-content').html(html);
+                            $('#resultados').removeClass('hidden');
+                        } else {
+                            $('#resultados-content').html(`<p class="error">❌ ${response.error}</p>`);
+                            $('#resultados').removeClass('hidden');
+                        }
+                    },
+                    error: function() {
+                        $('#resultados-content').html('<p class="error">❌ Error en la comunicación con el servidor</p>');
+                        $('#resultados').removeClass('hidden');
+                    },
+                    complete: function() {
+                        $('#solve-btn').prop('disabled', false).text('🔍 Resolver Sistema');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
