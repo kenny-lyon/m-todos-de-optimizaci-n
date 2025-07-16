@@ -1,0 +1,5 @@
+necesitas descargar la base de datos y tenerlo en el mismo directorio donde esta el código
+BD: https://www.kaggle.com/datasets/grouplens/movielens-20m-dataset/data
+============================================================================================
+además de tener instalado las siguientes librerías para la correcta ejecución del código:
+pip install pandas numpy optuna scikit-surprise scikit-learn joblib plotly tabulate
