@@ -1,2 +1,2 @@
-video1=https://youtu.be/KxL-IVu7k44
-video2=https://youtube.com/shorts/ekpC5L7u1Ho?feature=share
+https://youtu.be/KxL-IVu7k44
+https://youtube.com/shorts/ekpC5L7u1Ho?feature=share
